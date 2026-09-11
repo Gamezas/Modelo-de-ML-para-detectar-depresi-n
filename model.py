@@ -69,16 +69,22 @@ def grad_des(X, y, alpha, iterations):
     w = np.zeros(n)
     b = 0
 
+    loss_hist = []
+
     for i in range(iterations):
         grad_w, grad_b = grad_fun(X, y, w, b)
 
         w = w - alpha * grad_w
         b = b - alpha * grad_b
 
+        loss = cross_entropy(X, y, w, b)
+
+        loss_hist.append(loss)
+
         if i % 100 == 0:
             print(f"Iteracion {i}: Loss/Costo {cross_entropy(X, y, w, b)}")
 
-    return w, b
+    return w, b, loss_hist
 
 def predict(X, w, b):
     preds = np.zeros(X.shape[0])
@@ -94,11 +100,17 @@ def predict(X, w, b):
 lr = 0.1
 iterations = 1000
 
-w, b = grad_des(x_train, y_train, lr, iterations)
+w, b, test_loss = grad_des(x_train, y_train, lr, iterations)
 
 predictions = predict(x_train, w, b)
 accuracy = np.mean(predictions == y_train) * 100
 print(f"Accuracy del train: {accuracy}")
+
+plt.plot(test_loss, label="Test Loss")
+plt.xlabel("Iteraciones")
+plt.ylabel("Loss")
+
+plt.show()
 
 predictions = predict(x_test, w, b)
 accuracy = np.mean(predictions == y_test) * 100
